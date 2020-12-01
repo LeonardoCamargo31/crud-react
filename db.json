@@ -1,24 +1,9 @@
 {
   "product": [
     {
-      "id": 1,
-      "name": "Product 1",
-      "color": "1"
-    },
-    {
       "id": 8,
       "name": "Product 3",
       "color": "azul"
-    },
-    {
-      "name": "Product 3",
-      "color": "azul",
-      "id": 9
-    },
-    {
-      "name": "Product 1",
-      "color": "1",
-      "id": 10
     }
   ]
 }

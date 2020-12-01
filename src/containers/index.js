@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Box from '@material-ui/core/Box'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -16,9 +17,12 @@ import FileCopyIcon from '@material-ui/icons/FileCopy'
 import Grid from '@material-ui/core/Grid'
 import api from '../utils/api'
 
+const INITIAL_FORM = { id: '', name: '', color: '' }
+const INITIAL_LIST = []
+
 const Index = () => {
-  const [form, setForm] = useState({ id: null, name: '', color: '' })
-  const [data, setData] = useState([])
+  const [form, setForm] = useState(INITIAL_FORM)
+  const [data, setData] = useState(INITIAL_LIST)
   const [openForm, setOpenForm] = useState(true)
 
   const loadProducts = () => {
@@ -32,7 +36,7 @@ const Index = () => {
   }, [])
 
   const handleForm = () => {
-    setOpenForm(!form)
+    setOpenForm(!openForm)
   }
 
   const onChangeInput = (event) => {
@@ -43,6 +47,9 @@ const Index = () => {
     api.get(`/product/${id}`).then((res) => {
       if (res.status === 200) {
         setForm(res.data)
+        if (!openForm) {
+          setOpenForm(!openForm)
+        }
       }
     })
   }
@@ -74,44 +81,47 @@ const Index = () => {
   }
 
   const handleButton = () => {
-    const id = document.getElementById('id').value
-    if (id) {
-      api.put(`/product/${id}`, form).then((res) => {
-        if (res.status === 200) {
-          setForm({ id: null, name: '', color: '' })
-          loadProducts()
-        }
-      })
-    } else {
-      api.post('/product', form).then((res) => {
-        if (res.status === 201) {
-          setForm({ id: null, name: '', color: '' })
-          loadProducts()
-        }
-      })
+    if (form.name !== '' && form.color !== '') {
+      const id = document.getElementById('id').value
+      if (id !== '') {
+        api.put(`/product/${id}`, form).then((res) => {
+          if (res.status === 200) {
+            setForm(INITIAL_FORM)
+            loadProducts()
+          }
+        })
+      } else {
+        api.post('/product', form).then((res) => {
+          if (res.status === 201) {
+            setForm(INITIAL_FORM)
+            loadProducts()
+          }
+        })
+      }
     }
   }
 
   const renderForm = () => (
-    <div className={`c-form ${form ? 'c-form--open' : ''}`}>
-      <h2 id="modal-title">Meu Título</h2>
-      <p id="modal-description">Minha Descrição</p>
+    <div className={`c-form ${openForm ? 'c-form--open' : ''}`}>
+      <h2 id="modal-title">
+        {form.id ? 'Atualizar produto' : 'Inserir novo produto'}
+      </h2>
       <Grid container spacing={1}>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={4}>
           <input type="hidden" id="id" value={form.id} />
           <FormControl fullWidth>
             <InputLabel htmlFor="name">Nome</InputLabel>
             <Input name="name" value={form.name} onChange={onChangeInput} />
           </FormControl>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={4}>
           <FormControl fullWidth>
             <InputLabel htmlFor="color">Cor</InputLabel>
             <Input name="color" value={form.color} onChange={onChangeInput} />
           </FormControl>
         </Grid>
-        <Grid item xs={4}>
-          <Button onClick={handleButton} color="primary">
+        <Grid item xs={12} sm={4}>
+          <Button onClick={handleButton} variant="contained" color="primary">
             Salvar
           </Button>
         </Grid>
@@ -125,18 +135,26 @@ const Index = () => {
       <TableCell>{row.name}</TableCell>
       <TableCell>{row.color}</TableCell>
       <TableCell align="center">
-        <Button variant="contained" color="primary">
-          <EditIcon onClick={() => findProductById(row.id)} />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => findProductById(row.id)}
+        >
+          <EditIcon />
         </Button>
       </TableCell>
       <TableCell align="center">
-        <Button variant="contained">
-          <FileCopyIcon onClick={() => duplicateProduct(row.id)} />
+        <Button variant="contained" onClick={() => duplicateProduct(row.id)}>
+          <FileCopyIcon />
         </Button>
       </TableCell>
       <TableCell align="center">
-        <Button variant="contained" color="secondary">
-          <DeleteIcon onClick={() => deleteById(row.id)} />
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => deleteById(row.id)}
+        >
+          <DeleteIcon />
         </Button>
       </TableCell>
     </TableRow>
@@ -162,13 +180,23 @@ const Index = () => {
 
   return (
     <>
-      {renderForm()}
+      <Box pr={2} pl={2}>
+        <Box mb={2}>{renderForm()}</Box>
 
-      <button type="button" onClick={handleForm}>
-        {openForm ? 'Fechar formulário' : 'Adicionar produto'}
-      </button>
-
-      {renderTable()}
+        <Box mb={2}>
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            onClick={handleForm}
+          >
+            {openForm ? 'Fechar formulário' : 'Adicionar produto'}
+          </Button>
+        </Box>
+      </Box>
+      <Box pr={2} pl={2}>
+        {renderTable()}
+      </Box>
     </>
   )
 }
