@@ -54,6 +54,7 @@ const Index = () => {
           name: resFind.data.name,
           color: resFind.data.color,
         }
+        console.log('Dados duplicar', formData)
 
         api.post('/product', product).then((resSave) => {
           if (resSave.status === 201) {
@@ -68,6 +69,7 @@ const Index = () => {
   }
 
   const deleteProduct = (id) => {
+    console.log('Id do produto para excluir', id)
     api.delete(`/product/${id}`).then((res) => {
       if (res.status === 200) {
         setFormData(res.data)
@@ -83,6 +85,7 @@ const Index = () => {
     if (formData.name !== '' && formData.color !== '') {
       const id = document.getElementById('id').value
       if (id !== '') {
+        console.log('Dados editar', formData)
         api.put(`/product/${id}`, formData).then((res) => {
           if (res.status === 200) {
             setFormData(INITIAL_FORM)
@@ -93,6 +96,7 @@ const Index = () => {
           }
         })
       } else {
+        console.log('Dados salvar', formData)
         api.post('/product', formData).then((res) => {
           if (res.status === 201) {
             setFormData(INITIAL_FORM)
