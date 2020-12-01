@@ -6,44 +6,19 @@
       "color": "1"
     },
     {
-      "id": 2,
-      "name": "",
-      "color": ""
-    },
-    {
-      "id": 3,
-      "name": "",
-      "color": ""
-    },
-    {
-      "id": 4,
-      "name": "",
-      "color": ""
-    },
-    {
-      "id": 5,
-      "name": "",
-      "color": ""
-    },
-    {
-      "id": 6,
-      "name": "",
-      "color": ""
-    },
-    {
-      "id": 7,
-      "name": "",
-      "color": ""
-    },
-    {
       "id": 8,
       "name": "Product 3",
       "color": "azul"
     },
     {
-      "id": 9,
-      "name": "porucro",
-      "color": "22"
+      "name": "Product 3",
+      "color": "azul",
+      "id": 9
+    },
+    {
+      "name": "Product 1",
+      "color": "1",
+      "id": 10
     }
   ]
 }

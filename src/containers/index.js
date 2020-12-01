@@ -47,11 +47,36 @@ const Index = () => {
     })
   }
 
+  const duplicateProduct = (id) => {
+    api.get(`/product/${id}`).then((resFind) => {
+      if (resFind.status === 200) {
+        const product = {
+          name: resFind.data.name,
+          color: resFind.data.color,
+        }
+
+        api.post('/product', product).then((resSave) => {
+          if (resSave.status === 201) {
+            loadProducts()
+          }
+        })
+      }
+    })
+  }
+
+  const deleteById = (id) => {
+    api.delete(`/product/${id}`).then((res) => {
+      if (res.status === 200) {
+        setForm(res.data)
+        loadProducts()
+      }
+    })
+  }
+
   const handleButton = () => {
     const id = document.getElementById('id').value
     if (id) {
       api.put(`/product/${id}`, form).then((res) => {
-        console.log(res)
         if (res.status === 200) {
           setForm({ id: null, name: '', color: '' })
           loadProducts()
@@ -95,24 +120,23 @@ const Index = () => {
   )
 
   const renderRow = (row) => (
-    <TableRow key={row.name}>
-      <TableCell component="th" scope="row">
-        {row.name}
-      </TableCell>
-      <TableCell align="right">{row.color}</TableCell>
-      <TableCell align="right">
+    <TableRow key={row.id}>
+      <TableCell>{row.id}</TableCell>
+      <TableCell>{row.name}</TableCell>
+      <TableCell>{row.color}</TableCell>
+      <TableCell align="center">
         <Button variant="contained" color="primary">
           <EditIcon onClick={() => findProductById(row.id)} />
         </Button>
       </TableCell>
-      <TableCell align="right">
+      <TableCell align="center">
         <Button variant="contained">
-          <FileCopyIcon />
+          <FileCopyIcon onClick={() => duplicateProduct(row.id)} />
         </Button>
       </TableCell>
-      <TableCell align="right">
+      <TableCell align="center">
         <Button variant="contained" color="secondary">
-          <DeleteIcon />
+          <DeleteIcon onClick={() => deleteById(row.id)} />
         </Button>
       </TableCell>
     </TableRow>
@@ -123,11 +147,12 @@ const Index = () => {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>Id</TableCell>
             <TableCell>Nome do produto</TableCell>
-            <TableCell align="right">Cor</TableCell>
-            <TableCell align="right">Editar</TableCell>
-            <TableCell align="right">Duplicar</TableCell>
-            <TableCell align="right">Excluir</TableCell>
+            <TableCell>Cor</TableCell>
+            <TableCell align="center">Editar</TableCell>
+            <TableCell align="center">Duplicar</TableCell>
+            <TableCell align="center">Excluir</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{data.map((row) => renderRow(row))}</TableBody>
