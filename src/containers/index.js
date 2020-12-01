@@ -15,6 +15,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
 import Grid from '@material-ui/core/Grid'
+import notify from '../utils/notify'
 import api from '../utils/api'
 
 const INITIAL_FORM = { id: '', name: '', color: '' }
@@ -25,17 +26,21 @@ const Index = () => {
   const [data, setData] = useState(INITIAL_LIST)
   const [openForm, setOpenForm] = useState(true)
 
-  const loadProducts = () => {
+  const loadAllProducts = () => {
     api.get('/product').then((res) => {
-      setData(res.data)
+      if (res.status === 200) {
+        setData(res.data)
+      } else {
+        notify('error', 'Não foi possível carregar os produtos!')
+      }
     })
   }
 
   useEffect(() => {
-    loadProducts()
+    loadAllProducts()
   }, [])
 
-  const handleForm = () => {
+  const handleOpenForm = () => {
     setOpenForm(!openForm)
   }
 
@@ -64,7 +69,10 @@ const Index = () => {
 
         api.post('/product', product).then((resSave) => {
           if (resSave.status === 201) {
-            loadProducts()
+            loadAllProducts()
+            notify('success', 'Produto duplicado com sucesso!')
+          } else {
+            notify('error', 'Não foi possível duplicar o produto!')
           }
         })
       }
@@ -75,7 +83,10 @@ const Index = () => {
     api.delete(`/product/${id}`).then((res) => {
       if (res.status === 200) {
         setForm(res.data)
-        loadProducts()
+        loadAllProducts()
+        notify('success', 'Produto excluído com sucesso!')
+      } else {
+        notify('error', 'Não foi possível excluir o produto!')
       }
     })
   }
@@ -87,14 +98,20 @@ const Index = () => {
         api.put(`/product/${id}`, form).then((res) => {
           if (res.status === 200) {
             setForm(INITIAL_FORM)
-            loadProducts()
+            loadAllProducts()
+            notify('success', 'Produto alterado com sucesso!')
+          } else {
+            notify('error', 'Não foi possível alterar o produto!')
           }
         })
       } else {
         api.post('/product', form).then((res) => {
           if (res.status === 201) {
             setForm(INITIAL_FORM)
-            loadProducts()
+            loadAllProducts()
+            notify('success', 'Produto criado com sucesso!')
+          } else {
+            notify('error', 'Não foi possível criar o produto!')
           }
         })
       }
@@ -188,7 +205,7 @@ const Index = () => {
             type="button"
             variant="contained"
             color="primary"
-            onClick={handleForm}
+            onClick={handleOpenForm}
           >
             {openForm ? 'Fechar formulário' : 'Adicionar produto'}
           </Button>
