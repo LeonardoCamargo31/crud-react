@@ -1,33 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import Box from '@material-ui/core/Box'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
-import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
-import FileCopyIcon from '@material-ui/icons/FileCopy'
 import notify from '../../utils/notify'
 import api from '../../utils/api'
-
 import RenderForm from './renderForm'
+import RenderTable from './renderTable'
 
 const INITIAL_FORM = { id: '', name: '', color: '' }
 const INITIAL_LIST = []
 
 const Index = () => {
   const [formData, setFormData] = useState(INITIAL_FORM)
-  const [data, setData] = useState(INITIAL_LIST)
-  const [openForm, setOpenForm] = useState(true)
+  const [listProduct, setListProduct] = useState(INITIAL_LIST)
+  const [openForm, setOpenForm] = useState(false)
 
   const loadAllProducts = () => {
     api.get('/product').then((res) => {
       if (res.status === 200) {
-        setData(res.data)
+        setListProduct(res.data)
       } else {
         notify('error', 'Não foi possível carregar os produtos!')
       }
@@ -77,7 +67,7 @@ const Index = () => {
     })
   }
 
-  const deleteById = (id) => {
+  const deleteProduct = (id) => {
     api.delete(`/product/${id}`).then((res) => {
       if (res.status === 200) {
         setFormData(res.data)
@@ -116,55 +106,6 @@ const Index = () => {
     }
   }
 
-  const renderRow = (row) => (
-    <TableRow key={row.id}>
-      <TableCell>{row.id}</TableCell>
-      <TableCell>{row.name}</TableCell>
-      <TableCell>{row.color}</TableCell>
-      <TableCell align="center">
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => findProductById(row.id)}
-        >
-          <EditIcon />
-        </Button>
-      </TableCell>
-      <TableCell align="center">
-        <Button variant="contained" onClick={() => duplicateProduct(row.id)}>
-          <FileCopyIcon />
-        </Button>
-      </TableCell>
-      <TableCell align="center">
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => deleteById(row.id)}
-        >
-          <DeleteIcon />
-        </Button>
-      </TableCell>
-    </TableRow>
-  )
-
-  const renderTable = () => (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Id</TableCell>
-            <TableCell>Nome do produto</TableCell>
-            <TableCell>Cor</TableCell>
-            <TableCell align="center">Editar</TableCell>
-            <TableCell align="center">Duplicar</TableCell>
-            <TableCell align="center">Excluir</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{data.map((row) => renderRow(row))}</TableBody>
-      </Table>
-    </TableContainer>
-  )
-
   return (
     <>
       <Box pr={2} pl={2}>
@@ -189,7 +130,12 @@ const Index = () => {
         </Box>
       </Box>
       <Box pr={2} pl={2}>
-        {renderTable()}
+        <RenderTable
+          deleteProduct={deleteProduct}
+          duplicateProduct={duplicateProduct}
+          findProductById={findProductById}
+          listProduct={listProduct}
+        />
       </Box>
     </>
   )

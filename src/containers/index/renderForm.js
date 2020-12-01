@@ -5,6 +5,7 @@ import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Input from '@material-ui/core/Input'
 import Button from '@material-ui/core/Button'
+import Box from '@material-ui/core/Box'
 
 const RenderForm = ({
   onChangeInput,
@@ -12,10 +13,8 @@ const RenderForm = ({
   formData,
   handleSubmitButton,
 }) => (
-  <div className={`c-form ${openForm ? 'c-form--open' : ''}`}>
-    <h2 id="modal-title">
-      {formData.id ? 'Atualizar produto' : 'Inserir novo produto'}
-    </h2>
+  <Box display={`${openForm ? 'block' : 'none'}`}>
+    <h2>{formData.id ? 'Atualizar produto' : 'Inserir novo produto'}</h2>
     <Grid container spacing={1}>
       <Grid item xs={12} sm={4}>
         <input type="hidden" id="id" value={formData.id} />
@@ -40,7 +39,7 @@ const RenderForm = ({
         </Button>
       </Grid>
     </Grid>
-  </div>
+  </Box>
 )
 
 RenderForm.propTypes = {
