@@ -1,3 +1,14 @@
 {
-  "product": []
+  "product": [
+    {
+      "id": 1,
+      "name": "Produto A",
+      "color": "Amarelo"
+    },
+    {
+      "id": 2,
+      "name": "Produto B",
+      "color": "Vermelho"
+    }
+  ]
 }

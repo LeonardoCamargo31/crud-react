@@ -8,21 +8,19 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
-import FormControl from '@material-ui/core/FormControl'
-import InputLabel from '@material-ui/core/InputLabel'
-import Input from '@material-ui/core/Input'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
-import Grid from '@material-ui/core/Grid'
-import notify from '../utils/notify'
-import api from '../utils/api'
+import notify from '../../utils/notify'
+import api from '../../utils/api'
+
+import RenderForm from './renderForm'
 
 const INITIAL_FORM = { id: '', name: '', color: '' }
 const INITIAL_LIST = []
 
 const Index = () => {
-  const [form, setForm] = useState(INITIAL_FORM)
+  const [formData, setFormData] = useState(INITIAL_FORM)
   const [data, setData] = useState(INITIAL_LIST)
   const [openForm, setOpenForm] = useState(true)
 
@@ -45,13 +43,13 @@ const Index = () => {
   }
 
   const onChangeInput = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value })
+    setFormData({ ...formData, [event.target.name]: event.target.value })
   }
 
   const findProductById = (id) => {
     api.get(`/product/${id}`).then((res) => {
       if (res.status === 200) {
-        setForm(res.data)
+        setFormData(res.data)
         if (!openForm) {
           setOpenForm(!openForm)
         }
@@ -82,7 +80,7 @@ const Index = () => {
   const deleteById = (id) => {
     api.delete(`/product/${id}`).then((res) => {
       if (res.status === 200) {
-        setForm(res.data)
+        setFormData(res.data)
         loadAllProducts()
         notify('success', 'Produto excluído com sucesso!')
       } else {
@@ -91,13 +89,13 @@ const Index = () => {
     })
   }
 
-  const handleButton = () => {
-    if (form.name !== '' && form.color !== '') {
+  const handleSubmitButton = () => {
+    if (formData.name !== '' && formData.color !== '') {
       const id = document.getElementById('id').value
       if (id !== '') {
-        api.put(`/product/${id}`, form).then((res) => {
+        api.put(`/product/${id}`, formData).then((res) => {
           if (res.status === 200) {
-            setForm(INITIAL_FORM)
+            setFormData(INITIAL_FORM)
             loadAllProducts()
             notify('success', 'Produto alterado com sucesso!')
           } else {
@@ -105,9 +103,9 @@ const Index = () => {
           }
         })
       } else {
-        api.post('/product', form).then((res) => {
+        api.post('/product', formData).then((res) => {
           if (res.status === 201) {
-            setForm(INITIAL_FORM)
+            setFormData(INITIAL_FORM)
             loadAllProducts()
             notify('success', 'Produto criado com sucesso!')
           } else {
@@ -117,34 +115,6 @@ const Index = () => {
       }
     }
   }
-
-  const renderForm = () => (
-    <div className={`c-form ${openForm ? 'c-form--open' : ''}`}>
-      <h2 id="modal-title">
-        {form.id ? 'Atualizar produto' : 'Inserir novo produto'}
-      </h2>
-      <Grid container spacing={1}>
-        <Grid item xs={12} sm={4}>
-          <input type="hidden" id="id" value={form.id} />
-          <FormControl fullWidth>
-            <InputLabel htmlFor="name">Nome</InputLabel>
-            <Input name="name" value={form.name} onChange={onChangeInput} />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
-            <InputLabel htmlFor="color">Cor</InputLabel>
-            <Input name="color" value={form.color} onChange={onChangeInput} />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Button onClick={handleButton} variant="contained" color="primary">
-            Salvar
-          </Button>
-        </Grid>
-      </Grid>
-    </div>
-  )
 
   const renderRow = (row) => (
     <TableRow key={row.id}>
@@ -198,7 +168,14 @@ const Index = () => {
   return (
     <>
       <Box pr={2} pl={2}>
-        <Box mb={2}>{renderForm()}</Box>
+        <Box mb={2}>
+          <RenderForm
+            onChangeInput={onChangeInput}
+            openForm={openForm}
+            formData={formData}
+            handleSubmitButton={handleSubmitButton}
+          />
+        </Box>
 
         <Box mb={2}>
           <Button

@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid'
 import { ToastContainer } from 'react-toastify'
 import Header from './components/header'
 import Sidebar from './components/sidebar'
-import Index from './containers/index'
+import Index from './containers/index/index'
 
 function App() {
   return (
