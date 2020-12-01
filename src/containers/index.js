@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -14,31 +13,84 @@ import Input from '@material-ui/core/Input'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
+import Grid from '@material-ui/core/Grid'
+import api from '../utils/api'
 
 const Index = () => {
+  const [form, setForm] = useState({ id: null, name: '', color: '' })
   const [data, setData] = useState([])
-  const [form, setForm] = useState(false)
+  const [openForm, setOpenForm] = useState(true)
 
-  function handleForm() {
-    setForm(!form)
+  const loadProducts = () => {
+    api.get('/product').then((res) => {
+      setData(res.data)
+    })
   }
 
   useEffect(() => {
-    axios
-      .get('https://crudcrud.com/api/3ccd06bb2291442d87fbd518ae92003e/product')
-      .then((res) => {
-        setData(res.data)
-      })
+    loadProducts()
   }, [])
+
+  const handleForm = () => {
+    setOpenForm(!form)
+  }
+
+  const onChangeInput = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value })
+  }
+
+  const findProductById = (id) => {
+    api.get(`/product/${id}`).then((res) => {
+      if (res.status === 200) {
+        setForm(res.data)
+      }
+    })
+  }
+
+  const handleButton = () => {
+    const id = document.getElementById('id').value
+    if (id) {
+      api.put(`/product/${id}`, form).then((res) => {
+        console.log(res)
+        if (res.status === 200) {
+          setForm({ id: null, name: '', color: '' })
+          loadProducts()
+        }
+      })
+    } else {
+      api.post('/product', form).then((res) => {
+        if (res.status === 201) {
+          setForm({ id: null, name: '', color: '' })
+          loadProducts()
+        }
+      })
+    }
+  }
 
   const renderForm = () => (
     <div className={`c-form ${form ? 'c-form--open' : ''}`}>
       <h2 id="modal-title">Meu Título</h2>
       <p id="modal-description">Minha Descrição</p>
-      <FormControl>
-        <InputLabel htmlFor="my-input">Email address</InputLabel>
-        <Input id="my-input" aria-describedby="my-helper-text" />
-      </FormControl>
+      <Grid container spacing={1}>
+        <Grid item xs={4}>
+          <input type="hidden" id="id" value={form.id} />
+          <FormControl fullWidth>
+            <InputLabel htmlFor="name">Nome</InputLabel>
+            <Input name="name" value={form.name} onChange={onChangeInput} />
+          </FormControl>
+        </Grid>
+        <Grid item xs={4}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="color">Cor</InputLabel>
+            <Input name="color" value={form.color} onChange={onChangeInput} />
+          </FormControl>
+        </Grid>
+        <Grid item xs={4}>
+          <Button onClick={handleButton} color="primary">
+            Salvar
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   )
 
@@ -50,7 +102,7 @@ const Index = () => {
       <TableCell align="right">{row.color}</TableCell>
       <TableCell align="right">
         <Button variant="contained" color="primary">
-          <EditIcon />
+          <EditIcon onClick={() => findProductById(row.id)} />
         </Button>
       </TableCell>
       <TableCell align="right">
@@ -88,7 +140,7 @@ const Index = () => {
       {renderForm()}
 
       <button type="button" onClick={handleForm}>
-        {form ? 'Fechar formulário' : 'Adicionar produto'}
+        {openForm ? 'Fechar formulário' : 'Adicionar produto'}
       </button>
 
       {renderTable()}
