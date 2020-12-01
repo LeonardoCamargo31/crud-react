@@ -1,7 +1,14 @@
 import React from 'react'
-import { Button } from '@material-ui/core'
+
+import Header from './components/header'
+import Sidebar from './components/sidebar'
 
 function App() {
-  return <Button color="primary">Hello World</Button>
+  return (
+    <>
+      <Header />
+      <Sidebar />
+    </>
+  )
 }
 export default App
