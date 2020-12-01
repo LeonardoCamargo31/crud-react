@@ -1,14 +1,25 @@
 import React from 'react'
+import Grid from '@material-ui/core/Grid'
 
 import Header from './components/header'
 import Sidebar from './components/sidebar'
 
+import Index from './containers/index'
+
 function App() {
   return (
-    <>
-      <Header />
-      <Sidebar />
-    </>
+    <Grid container>
+      <Grid item xs={12}>
+        <Header />
+      </Grid>
+      <Grid item xs={12} sm={3}>
+        <Sidebar />
+      </Grid>
+      <Grid item xs={12} sm={8}>
+        <Index />
+      </Grid>
+      <Grid item xs={0} sm={1} />
+    </Grid>
   )
 }
 export default App
